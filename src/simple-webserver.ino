@@ -61,6 +61,13 @@ rcl_timer_t timer;
 
 char buffer[100];
 
+void error_loop() {
+  while (1) {
+    Serial1.println("error loop");
+    delay(100);
+  }
+}
+
 void timer_callback(rcl_timer_t *timer, int64_t last_call_time) {
   RCLC_UNUSED(last_call_time);
   if (timer != NULL) {

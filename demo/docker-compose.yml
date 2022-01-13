@@ -1,0 +1,27 @@
+version: '2.3'
+
+services:
+  agent:
+    image: microros/micro-ros-agent:galactic
+    network_mode: service:husarnet
+    command: udp6 --port 8888 # -v6
+
+  listener:
+    image: osrf/ros:galactic-desktop
+    command: ros2 run demo_nodes_cpp listener
+
+  husarnet:
+    image: husarnet/husarnet
+    restart: unless-stopped
+    volumes:
+      - /var/lib/husarnet  # This will persist your Husarnet Client keys, thus IP of the container will be stable/the same between (re)boots
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0  # Husarnet is using IPv6 for the internal connections
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - HOSTNAME=microros-agent
+    env_file:
+      - ./.env  # create .env file in the same folder

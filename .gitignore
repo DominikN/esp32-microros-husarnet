@@ -2,4 +2,4 @@
 src/credentials.h
 .vscode/
 firmware.bin
-node_modules/
+demo/.env
