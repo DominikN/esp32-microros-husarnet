@@ -1,0 +1,27 @@
+name: ESP32 OTA update
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Installing platformio
+      run: pip3 install -U platformio
+
+    - name: Building a firmware for ESP32
+      run: |
+        export SSID=${{ secrets.WIFI_SSID }}
+        export PASS=${{ secrets.WIFI_PASS }}
+        export JOINCODE=${{ secrets.HUSARNET_JOINCODE }}
+        export HOSTNAME=${{ secrets.HUSARNET_HOSTNAME }}
+        pio run
+

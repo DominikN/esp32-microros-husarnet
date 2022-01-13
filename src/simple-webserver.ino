@@ -1,6 +1,4 @@
-#include <AsyncElegantOTA.h>
 #include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
 #include <Husarnet.h>
 #include <WiFi.h>
 #include <micro_ros_arduino.h>
@@ -147,7 +145,7 @@ void setup(void) {
                    host.first.toString().c_str());
   }
 
-  set_microros_wifi_transports(agent_hostname, AGENT_PORT);
+  set_microros_husarnet_transports(agent_hostname, AGENT_PORT);
 
   delay(2000);
 
