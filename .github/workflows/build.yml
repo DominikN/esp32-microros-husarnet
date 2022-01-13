@@ -1,10 +1,9 @@
 name: ESP32 OTA update
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches:
-  #     - 'main'
+  push:
+    branches:
+      - 'main'
 
 jobs:
   build:
@@ -13,7 +12,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      
+
     - name: Installing platformio
       run: pip3 install -U platformio
 
