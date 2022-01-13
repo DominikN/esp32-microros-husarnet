@@ -1,9 +1,10 @@
 name: ESP32 OTA update
 
 on:
-  push:
-    branches:
-      - 'main'
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - 'main'
 
 jobs:
   build:
