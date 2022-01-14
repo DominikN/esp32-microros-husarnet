@@ -1,8 +1,6 @@
-# esp32-internet-ota
+# esp32-microros-husarnet
 
-ESP32 + GitHub Actions + Husarnet. 
-
-A boilerplate project for ESP32 allowing in-field firmware update using GitHub Actions workflow.
+ESP32 + Micro-ROS + Husarnet demo
 
 > **Prerequisites** 
 >
@@ -10,59 +8,40 @@ A boilerplate project for ESP32 allowing in-field firmware update using GitHub A
 
 ## Quick start
 
-### First setup
+### ESP32 (ROS 2 talker)
 
-1. Click **[Use this template](https://github.com/husarnet/esp32-internet-ota/generate)** button to create your own copy of this repo.
+1. Clone the repo  and open it in Visual Studio Code. Platformio should automatically install all project dependencies.
 
-2. Clone the repo you have just created and open it in Visual Studio Code. Platformio should automatically install all project dependencies.
-
-3. Rename `credentials-template.h` to `credentials.h` and type your WiFi an Husarnet credentials there (you will find you Husarnet Join Code at https://app.husarnet.com).
+2. Rename `credentials-template.h` to `credentials.h` and type your WiFi an Husarnet credentials there (you will find you Husarnet Join Code at https://app.husarnet.com).
 
 4. Click "PlatformIO: upload" button to flash your ESP32 board connected to your laptop. You will find the following log in the serial monitor:
 
     ```bash
     **************************************
-    GitHub Actions OTA example
+    micro-ROS + Husarnet example
     **************************************
-    
-    📻 1. Connecting to: FreeWifi Wi-Fi network .. done
 
-    ⌛ 2. Waiting for Husarnet to be ready ... done
+    📻 1. Connecting to: UPC5C2DB59 Wi-Fi network . done
 
-    🚀 HTTP server started
-
-    Visit:
-    http://my-esp32:8080/
+    ⌛ 2. Waiting for Husarnet to be ready ........ done
 
     Known hosts:
-    my-laptop (fc94:a4c1:1f22:ab3b:b04a:1a3b:ba15:84bc)
-    my-esp32 (fc94:f632:c8d9:d2a6:ad18:ed16:ed7e:9f3f)
+    esp32-talker (fc94:4050:1fc5:dc02:d27f:97b9:7f13:e215)
+    master (fc94:4050:1fc5:dc02:d27f:97b9:7f13:e215)
+    microros-agent (fc94:ffd0:3cd7:d104:2917:ae5c:a719:9e71)
+    Connecting to "microros-agent:8888"... 
     ```
 
-### Internet OTA with GitHub Actions
+### Laptop (ROS 2 listener + Micro-ROS Agent)
 
-1. Create the folowing GitHub repository secrets (`Settings` > `Secrets` > `New repository secret`):
+1. Rename `.env.template` to `.env` and place Husarnet Join Code here (the same as provided for ESP32 before).
 
-    | Secret | Sample Value | Desription |
-    | - | - | - |
-    | `WIFI_SSID` | FreeWifi | just your WiFi network name |
-    | `WIFI_PASS` | hardtoguess | ... and password |
-    | `HUSARNET_HOSTNAME` | my-esp32 | hostname under which you want your ESP32 to be available by other peers |
-    | `HUSARNET_JOINCODE` | fc94:...:932a/xhfqwPxxxetyCExsSPRPn9 | find your own **secret** Join Code at your user account at https://app/husarnet.com > `choosen network` >  `add element` button. Anyone with this Join Code can connect to your Husarnet network |
+2. Launch `micro-ROS agent` (TCPv6 on port **8888**), `listener` (from **demo_nodes_cpp**) and Husarnet container for VPN connectivity:
 
-2. Push changes to your repo:
-
-    ```bash
-    git add *
-    git commit -m "triggering the workflow"
-    git push
-    ```
-
-3. In ~3 minutes the GitHub workflow should finish its job. Visit: `http://my-esp32:8080` URL with a sample "Hello world" website hosted by your ESP32.
-
-
-    Of course your laptop need to be connected to the same Husarnet network - you will find quick start guide showing how to do it here: https://husarnet.com/docs/
-
+```bash
+cd demo
+docker-compose up
+```
 
 ## Tips
 
@@ -87,9 +66,3 @@ A boilerplate project for ESP32 allowing in-field firmware update using GitHub A
 ```bash
 sudo tcpflow -p -c -i hnet0
 ```
-
-### Accesing a webserver hosted by ESP32 using a public domain
-
-Here is a blog post showing how to configure Nginx Proxy Manager to **provide a public access to web servers hosted by Husarnet connected devices**: https://husarnet.com/blog/reverse-proxy-gui
-
-It can be also used  o provide the access to a web server hosted by ESP32 using a nice looking link like: `https://my-awesome-esp32.mydomain.com`.
