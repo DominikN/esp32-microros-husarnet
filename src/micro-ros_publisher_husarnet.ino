@@ -1,4 +1,3 @@
-#include <AsyncTCP.h>
 #include <Husarnet.h>
 #include <WiFi.h>
 #include <micro_ros_arduino.h>
@@ -8,6 +7,7 @@
 #include <rclc/executor.h>
 #include <rclc/rclc.h>
 #include <std_msgs/msg/string.h>
+#include <stdio.h>
 
 #if __has_include("credentials.h")
 
@@ -51,11 +51,9 @@ char *agent_hostname = "microros-agent";
 
 rcl_publisher_t publisher;
 std_msgs__msg__String msg;
-rclc_executor_t executor;
 rclc_support_t support;
 rcl_allocator_t allocator;
 rcl_node_t node;
-rcl_timer_t timer;
 
 char buffer[100];
 
@@ -81,7 +79,7 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time) {
 
 void setup(void) {
   // ===============================================
-  // Wi-Fi, OTA and Husarnet VPN configuration
+  // Wi-Fi and Husarnet VPN configuration
   // ===============================================
 
   // remap default Serial (used by Husarnet logs)
@@ -90,7 +88,7 @@ void setup(void) {
                 1);  // remap Serial1 from P9 & P10 to P3 & P1
 
   Serial1.println("\r\n**************************************");
-  Serial1.println("GitHub Actions OTA example");
+  Serial1.println("micro-ROS + Husarnet example");
   Serial1.println("**************************************\r\n");
 
   // Init Wi-Fi
@@ -145,11 +143,7 @@ void setup(void) {
                    host.first.toString().c_str());
   }
 
-  delay(2000);
-
   set_microros_husarnet_transports(agent_hostname, AGENT_PORT);
-
-  delay(2000);
 
   allocator = rcl_get_default_allocator();
 
@@ -160,39 +154,18 @@ void setup(void) {
   RCCHECK(rclc_node_init_default(&node, NODE_NAME, "", &support));
 
   // create publisher
-  RCCHECK(rclc_publisher_init_default(
+  RCCHECK(rclc_publisher_init_best_effort(
       &publisher, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
       "chatter"));
-
-  // create timer,
-  RCCHECK(rclc_timer_init_default(&timer, &support, RCL_MS_TO_NS(50),
-                                  timer_callback));
-
-  // create executor
-  RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
-  RCCHECK(rclc_executor_add_timer(&executor, &timer));
-
-  xTaskCreate(task_spin,   /* Task function. */
-              "task_spin", /* String with name of task. */
-              10000,       /* Stack size in bytes. */
-              NULL,        /* Parameter passed as input of the task */
-              1,           /* Priority of the task. */
-              NULL);       /* Task handle. */
-}
-
-void task_spin(void *parameter) {
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-  while (1) {
-    RCCHECK(rclc_executor_spin_some(&executor, 0));
-    vTaskDelayUntil(&xLastWakeTime, 10);
-  }
 }
 
 void loop(void) {
+  static int cnt = 0;
+  sprintf(buffer, "Hello World: %d, sys_clk: %d", cnt++, xTaskGetTickCount());
+  Serial1.printf("Publishing: %s\r\n", buffer);
+
+  msg.data = micro_ros_string_utilities_set(msg.data, buffer);
+
+  RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
   delay(100);
-  // TickType_t xLastWakeTime = xTaskGetTickCount();
-  // while (1) {
-  //   RCCHECK(rclc_executor_spin_some(&executor,0));
-  //   vTaskDelayUntil(&xLastWakeTime, 10);
-  // }
 }
