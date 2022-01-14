@@ -106,7 +106,7 @@ void setup(void) {
     }
   }
 
-  Serial1.println(" done\r\n");
+  Serial1.println("done\r\n");
 
   // Init Husarnet P2P VPN service
   Serial1.printf("⌛ 2. Waiting for Husarnet to be ready ");
@@ -131,7 +131,7 @@ void setup(void) {
     delay(1000);
   }
 
-  Serial1.println(" done\r\n");
+  Serial1.println("done\r\n");
 
   // ===============================================
   // PLACE YOUR APPLICATION CODE BELOW
@@ -142,21 +142,30 @@ void setup(void) {
     Serial1.printf("%s (%s)\r\n", host.second.c_str(),
                    host.first.toString().c_str());
   }
+  Serial1.println();
 
+  Serial1.printf("⌛ 3. Set Micro-ROS transport ... ");
   set_microros_husarnet_transports(agent_hostname, AGENT_PORT);
+  Serial1.println("done\r\n");
 
   allocator = rcl_get_default_allocator();
 
   // create init_options
+  Serial1.printf("⌛ 4. create Micro-ROS init_options ... ");
   RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
+  Serial1.println("done\r\n");
 
   // create node
+  Serial1.printf("⌛ 5. create Micro-ROS node ... ");
   RCCHECK(rclc_node_init_default(&node, NODE_NAME, "", &support));
+  Serial1.println("done\r\n");
 
   // create publisher
+  Serial1.printf("⌛ 6. create Micro-ROS publisher ... ");
   RCCHECK(rclc_publisher_init_best_effort(
       &publisher, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
       "chatter"));
+  Serial1.println("done\r\n");
 }
 
 void loop(void) {
