@@ -3,14 +3,14 @@ version: '2.3'
 services:
   agent:
     image: microros/micro-ros-agent:galactic
-    network_mode: service:husarnet
-    command: udp6 --port 8888 # -v6
+    network_mode: service:husarnet-agent
+    command: tcp6 --port 8888 -v6
 
   listener:
     image: osrf/ros:galactic-desktop
     command: ros2 run demo_nodes_cpp listener
 
-  husarnet:
+  husarnet-agent:
     image: husarnet/husarnet
     restart: unless-stopped
     volumes:

@@ -71,7 +71,7 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time) {
   if (timer != NULL) {
     static int cnt = 0;
     sprintf(buffer, "Hello World: %d, sys_clk: %d", cnt++, xTaskGetTickCount());
-    Serial.printf("Publishing: %s\r\n", buffer);
+    Serial1.printf("Publishing: %s\r\n", buffer);
 
     msg.data = micro_ros_string_utilities_set(msg.data, buffer);
 
@@ -145,6 +145,8 @@ void setup(void) {
                    host.first.toString().c_str());
   }
 
+  delay(2000);
+
   set_microros_husarnet_transports(agent_hostname, AGENT_PORT);
 
   delay(2000);
@@ -170,13 +172,27 @@ void setup(void) {
   RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
   RCCHECK(rclc_executor_add_timer(&executor, &timer));
 
+  xTaskCreate(task_spin,   /* Task function. */
+              "task_spin", /* String with name of task. */
+              10000,       /* Stack size in bytes. */
+              NULL,        /* Parameter passed as input of the task */
+              1,           /* Priority of the task. */
+              NULL);       /* Task handle. */
+}
+
+void task_spin(void *parameter) {
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  while (1) {
+    RCCHECK(rclc_executor_spin_some(&executor, 0));
+    vTaskDelayUntil(&xLastWakeTime, 10);
+  }
 }
 
 void loop(void) {
-
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-  while (1) {
-    RCCHECK(rclc_executor_spin(&executor));
-    vTaskDelayUntil(&xLastWakeTime, 10);
-  }
+  delay(100);
+  // TickType_t xLastWakeTime = xTaskGetTickCount();
+  // while (1) {
+  //   RCCHECK(rclc_executor_spin_some(&executor,0));
+  //   vTaskDelayUntil(&xLastWakeTime, 10);
+  // }
 }
