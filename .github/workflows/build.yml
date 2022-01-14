@@ -16,11 +16,9 @@ jobs:
     - name: Installing platformio
       run: pip3 install -U platformio
 
+    - name: Installing project deppendencies
+      run: pio lib install
+
     - name: Building a firmware for ESP32
-      run: |
-        export SSID=${{ secrets.WIFI_SSID }}
-        export PASS=${{ secrets.WIFI_PASS }}
-        export JOINCODE=${{ secrets.HUSARNET_JOINCODE }}
-        export HOSTNAME=${{ secrets.HUSARNET_HOSTNAME }}
-        pio run
+      run: pio run
 

@@ -1,5 +1,7 @@
 # esp32-microros-husarnet
 
+[![ESP32 OTA update](https://github.com/DominikN/esp32-microros-husarnet/actions/workflows/build.yml/badge.svg)](https://github.com/DominikN/esp32-microros-husarnet/actions/workflows/build.yml)
+
 ESP32 + Micro-ROS + Husarnet demo
 
 > **Prerequisites** 
