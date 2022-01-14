@@ -1,4 +1,4 @@
-name: ESP32 OTA update
+name: Build a firmware
 
 on:
   push:
