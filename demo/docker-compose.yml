@@ -3,12 +3,14 @@ version: '2.3'
 services:
   agent:
     image: microros/micro-ros-agent:galactic
+    restart: unless-stopped
     network_mode: service:husarnet-agent
-    command: tcp6 --port 8888 -v6
+    command: tcp6 --port 8888 #-v6
 
   listener:
-    image: osrf/ros:galactic-desktop
-    command: ros2 run demo_nodes_cpp listener
+    image: osrf/ros:galactic-desktop # ROS Foxy has Fast DDS preinstalled
+    restart: unless-stopped
+    command: ros2 topic echo /chatter
 
   husarnet-agent:
     image: husarnet/husarnet
