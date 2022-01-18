@@ -55,25 +55,12 @@ rclc_support_t support;
 rcl_allocator_t allocator;
 rcl_node_t node;
 
-char buffer[100];
+char buffer[500];
 
 void error_loop() {
   while (1) {
     Serial1.println("error loop");
     delay(100);
-  }
-}
-
-void timer_callback(rcl_timer_t *timer, int64_t last_call_time) {
-  RCLC_UNUSED(last_call_time);
-  if (timer != NULL) {
-    static int cnt = 0;
-    sprintf(buffer, "Hello World: %d, sys_clk: %d", cnt++, xTaskGetTickCount());
-    Serial1.printf("Publishing: %s\r\n", buffer);
-
-    msg.data = micro_ros_string_utilities_set(msg.data, buffer);
-
-    RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
   }
 }
 
@@ -171,10 +158,12 @@ void setup(void) {
 void loop(void) {
   static int cnt = 0;
   sprintf(buffer, "Hello World: %d, sys_clk: %d", cnt++, xTaskGetTickCount());
-  Serial1.printf("Publishing: %s\r\n", buffer);
+  Serial1.printf("Publishing: \"%s\" [free heap: %d]\r\n", buffer, xPortGetFreeHeapSize());
 
   msg.data = micro_ros_string_utilities_set(msg.data, buffer);
 
   RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
+
+  micro_ros_string_utilities_destroy(&(msg.data));
   delay(100);
 }
