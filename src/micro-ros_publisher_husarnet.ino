@@ -1,5 +1,4 @@
 #include <Husarnet.h>
-#include <AsyncUDP.h>
 #include <WiFi.h>
 #include <micro_ros_arduino.h>
 #include <micro_ros_utilities/string_utilities.h>
@@ -156,6 +155,7 @@ void setup(void) {
   Serial1.println("done\r\n");
 }
 
+TickType_t xLastWakeTime = xTaskGetTickCount();
 void loop(void) {
   static int cnt = 0;
   sprintf(buffer, "Hello World: %d, sys_clk: %d", cnt++, xTaskGetTickCount());
@@ -166,5 +166,5 @@ void loop(void) {
   RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
 
   micro_ros_string_utilities_destroy(&(msg.data));
-  delay(100);
+  vTaskDelayUntil(&xLastWakeTime, 100);
 }

@@ -5,8 +5,8 @@ services:
     image: microros/micro-ros-agent:galactic
     restart: unless-stopped
     network_mode: service:husarnet-agent
-    command: udp6 --port 8888 -v6
-    # command: tcp6 --port 8888 #-v6
+    # command: udp6 --port 8888 -v6
+    command: tcp6 --port 8888 -v6
 
   # listener:
   #   image: osrf/ros:galactic-desktop # ROS Foxy has Fast DDS preinstalled
