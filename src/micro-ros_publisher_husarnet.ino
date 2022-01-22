@@ -46,7 +46,7 @@ const char *dashboardURL = "default";
   }
 
 #define AGENT_PORT 8888
-#define NODE_NAME "stm32_node"
+#define NODE_NAME "talker"
 char *agent_hostname = "microros-agent";
 
 rcl_publisher_t publisher;
@@ -131,34 +131,34 @@ void setup(void) {
   }
   Serial1.println();
 
-  Serial1.printf("⌛ 3. Set Micro-ROS transport ... ");
+  Serial1.printf("⌛ 3. Launching Micro-ROS ");
   set_microros_husarnet_transports(agent_hostname, AGENT_PORT);
-  Serial1.println("done\r\n");
+  Serial1.printf(".");
 
   allocator = rcl_get_default_allocator();
 
   // create init_options
-  Serial1.printf("⌛ 4. create Micro-ROS init_options ... ");
   RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
-  Serial1.println("done\r\n");
+  Serial1.printf(".");
 
   // create node
-  Serial1.printf("⌛ 5. create Micro-ROS node ... ");
   RCCHECK(rclc_node_init_default(&node, NODE_NAME, "", &support));
-  Serial1.println("done\r\n");
+  Serial1.printf(".");
 
   // create publisher
-  Serial1.printf("⌛ 6. create Micro-ROS publisher ... ");
   RCCHECK(rclc_publisher_init_best_effort(
       &publisher, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
       "chatter"));
+  Serial1.printf(".");
   Serial1.println("done\r\n");
 }
 
-TickType_t xLastWakeTime = xTaskGetTickCount();
+
 void loop(void) {
+  static TickType_t xLastWakeTime = xTaskGetTickCount();
   static int cnt = 0;
-  sprintf(buffer, "Hello World: %d, sys_clk: %d", cnt++, xTaskGetTickCount());
+  // sprintf(buffer, "Hello World: %d, sys_clk: %d", cnt++, xTaskGetTickCount());
+  sprintf(buffer, "Hello World: %d", cnt++);
   Serial1.printf("Publishing: \"%s\" [free heap: %d]\r\n", buffer, xPortGetFreeHeapSize());
 
   msg.data = micro_ros_string_utilities_set(msg.data, buffer);
@@ -166,5 +166,5 @@ void loop(void) {
   RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
 
   micro_ros_string_utilities_destroy(&(msg.data));
-  vTaskDelayUntil(&xLastWakeTime, 100);
+  vTaskDelayUntil(&xLastWakeTime, 1000);
 }

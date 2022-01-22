@@ -5,13 +5,17 @@ services:
     image: microros/micro-ros-agent:galactic
     restart: unless-stopped
     network_mode: service:husarnet-agent
-    # command: udp6 --port 8888 -v6
-    command: tcp6 --port 8888 -v6
+    command: tcp6 --port 8888 # -v6
 
-  # listener:
-  #   image: osrf/ros:galactic-desktop # ROS Foxy has Fast DDS preinstalled
-  #   restart: unless-stopped
-  #   command: ros2 topic echo /chatter
+  listener:
+    image: osrf/ros:foxy-desktop # ROS Foxy has Fast DDS preinstalled
+    restart: unless-stopped
+    # A default 'listener' uses RMW_QOS_POLICY_RELIABILITY_RELIABLE and
+    # our micro-ROS node provides data with RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT.
+    # This is why need to use 'listener_best_effor' .
+    # To find info about QOS setting of all subscribers and publishers to a specific topic use:
+    # ros2 topic info /chatter -v
+    command: ros2 run demo_nodes_cpp listener_best_effort 
 
   husarnet-agent:
     image: husarnet/husarnet
