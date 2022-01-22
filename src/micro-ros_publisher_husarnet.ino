@@ -150,7 +150,10 @@ void setup(void) {
       &publisher, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
       "chatter"));
   Serial1.printf(".");
-  Serial1.println("done\r\n");
+
+  RCCHECK(rmw_uros_sync_session(5000));
+
+  Serial1.printf("done, sys time = %d\r\n", rmw_uros_epoch_millis());
 }
 
 
