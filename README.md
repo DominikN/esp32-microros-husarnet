@@ -14,7 +14,7 @@ Clone the repo  and open it in Visual Studio Code. Platformio should automatical
 
 ### Laptop (ROS 2 listener + Micro-ROS Agent)
 
-1. In a `demo/` folder rename `.env.template` to `.env` and place Husarnet Join Code here (you will find you Husarnet Join Code at https://app.husarnet.com).
+1. In a `demo/` folder rename `.env.template` to `.env` and place Husarnet Join Code here (you will findyour **Husarnet Join Code at https://app.husarnet.com)**.
 
 2. Launch `micro-ROS agent` (TCPv6 on port **8888**), `listener` (from **demo_nodes_cpp**) and Husarnet container for VPN connectivity:
 
